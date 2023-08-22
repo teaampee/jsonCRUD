@@ -16,7 +16,6 @@ func PostsCreate(c *gin.Context) {
 	}
 	err := c.Bind(&body)
 	if err != nil {
-		c.Status(400)
 		c.JSON(400, gin.H{
 			"message": "false data entered",
 		})
@@ -28,7 +27,6 @@ func PostsCreate(c *gin.Context) {
 
 	result := inits.DB.Create(&post) // pass pointer of data to Create
 	if result.Error != nil {
-		c.Status(400)
 		c.JSON(400, gin.H{
 			"message": "couldn't create posts",
 		})
@@ -46,7 +44,6 @@ func PostsIndex(c *gin.Context) {
 	var posts []models.Post
 	result := inits.DB.Find(&posts)
 	if result.Error != nil {
-		c.Status(500)
 		c.JSON(500, gin.H{
 			"message": "couldn't find posts",
 			"error":   result.Error,
@@ -67,7 +64,6 @@ func PostsShow(c *gin.Context) {
 	var post models.Post
 	result := inits.DB.First(&post, id)
 	if result.Error != nil {
-		c.Status(400)
 		c.JSON(400, gin.H{
 			"message": "couldn't find post",
 			"error":   result.Error,
@@ -91,7 +87,6 @@ func PostsUpdate(c *gin.Context) {
 	}
 	err := c.Bind(&body)
 	if err != nil {
-		c.Status(400)
 		c.JSON(400, gin.H{
 			"message": "false data entered",
 		})
@@ -102,7 +97,6 @@ func PostsUpdate(c *gin.Context) {
 	var post models.Post
 	result := inits.DB.First(&post, id)
 	if result.Error != nil {
-		c.Status(400)
 		c.JSON(400, gin.H{
 			"message": "couldn't find post",
 			"error":   result.Error,
@@ -116,7 +110,6 @@ func PostsUpdate(c *gin.Context) {
 		Body:  body.Body,
 	})
 	if result.Error != nil {
-		c.Status(400)
 		c.JSON(400, gin.H{
 			"message": "couldn't update the post",
 			"error":   result.Error,
@@ -128,4 +121,22 @@ func PostsUpdate(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"post": post,
 	})
+}
+
+func PostsDelete(c *gin.Context) {
+	//getting id off url
+	id := c.Param("id")
+
+	// detete it
+
+	result := inits.DB.Delete(&models.Post{}, id)
+	if result.Error != nil {
+		c.JSON(400, gin.H{
+			"message": "failed to delete post",
+		})
+		return
+	}
+
+	//returning it
+	c.Status(200)
 }
